@@ -1,0 +1,161 @@
+ENCS304 – Computer Networks
+Assignment 1 – Basic Network Topologies
+Output File: Ping Results and Observations
+
+
+========================================
+TASK 1 – Star Topology (Switch)
+========================================
+
+PC0 > ping 192.168.10.2
+
+Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+
+PC0 > ping 192.168.10.3
+
+Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+
+PC0 > ping 192.168.10.4
+
+Reply from 192.168.10.4: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.4: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.4: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.4: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+
+Observation:
+All devices successfully communicated through the switch.
+After MAC address learning, the switch forwards frames only to the
+destination port, improving efficiency and reducing unnecessary traffic.
+No packet loss occurred.
+
+
+========================================
+TASK 2 – Hub Topology
+========================================
+
+PC0(1) > ping 192.168.10.6
+
+Reply from 192.168.10.6: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.6: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.6: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.6: bytes=32 time=1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+
+PC0(1) > ping 192.168.10.7
+
+Reply from 192.168.10.7: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.7: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.7: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.7: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+
+PC0(1) > ping 192.168.10.8
+
+Reply from 192.168.10.8: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.8: bytes=32 time=1ms TTL=128
+Reply from 192.168.10.8: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.8: bytes=32 time=1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+
+Observation:
+All devices communicated successfully through the hub.
+However, unlike a switch, a hub broadcasts frames to all connected
+devices for every transmission. This increases unnecessary traffic and
+reduces overall network efficiency.
+No packet loss occurred, but hub-based networks are less efficient
+compared to switch-based networks.
+
+
+========================================
+TASK 3 – Ring-like Topology (Switch Loop with STP)
+========================================
+
+PC0(2) > ping 192.168.10.212
+
+Reply from 192.168.10.212: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.212: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.212: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.212: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+
+PC0(2) > ping 192.168.10.211
+
+Reply from 192.168.10.211: bytes=32 time=1ms TTL=128
+Reply from 192.168.10.211: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.211: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.211: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+
+Observation:
+Devices successfully communicated across multiple switches.
+Spanning Tree Protocol (STP) automatically blocked one redundant link
+to prevent loops and broadcast storms.
+The network remained stable and efficient with zero packet loss.
+
+
+========================================
+TASK 4 – Failure Test (Ring Topology)
+========================================
+
+PC0(3) > ping 192.168.10.218
+
+Reply from 192.168.10.218: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.218: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.218: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.218: bytes=32 time<1ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+
+PC0(3) > ping 192.168.10.217
+
+Reply from 192.168.10.217: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.217: bytes=32 time=1ms TTL=128
+Reply from 192.168.10.217: bytes=32 time<1ms TTL=128
+Reply from 192.168.10.217: bytes=32 time=2ms TTL=128
+
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+Minimum = 0ms, Maximum = 2ms, Average = 0ms
+
+
+Observation:
+After disconnecting one link in the ring topology, communication
+continued successfully due to the alternate path.
+STP recalculated the topology and activated the previously blocked port.
+This demonstrates fault tolerance and higher reliability compared to
+star topology.
+No packet loss occurred.

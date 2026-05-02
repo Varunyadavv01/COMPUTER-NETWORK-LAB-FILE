@@ -1,0 +1,146 @@
+========================================================
+  EXPERIMENT 2: Packet Flow Visualization - Event Log
+  Course: ENCS304 Computer Networks
+========================================================
+
+NETWORK TOPOLOGY
+-----------------
+Switch0       : Cisco 2960 (or any generic switch)
+PC0 (PC1)     : IP = 192.168.20.1 | Subnet = 255.255.255.0 | Gateway = (none)
+PC1 (PC2)     : IP = 192.168.20.2 | Subnet = 255.255.255.0 | Gateway = (none)
+PC2 (PC3)     : IP = 192.168.20.3 | Subnet = 255.255.255.0 | Gateway = (none)
+
+Connections:
+  PC0 FastEthernet0 --> Switch0 FastEthernet0/1
+  PC1 FastEthernet0 --> Switch0 FastEthernet0/2
+  PC2 FastEthernet0 --> Switch0 FastEthernet0/3
+
+========================================================
+TASK 2: FIRST PING (PC0 --> PC1 | 192.168.20.1 --> 192.168.20.2)
+========================================================
+
+Observation: ARP must resolve MAC address before ICMP can be sent.
+
+EVENT LIST (First Ping):
+---------------------------------------------------------------------------
+Event #  | At Device  | Type | Description
+---------------------------------------------------------------------------
+1        | PC0        | ARP  | PC0 sends ARP Request (BROADCAST)
+           "Who has 192.168.20.2? Tell 192.168.20.1"
+           Source MAC: PC0_MAC | Destination MAC: FF:FF:FF:FF:FF:FF
+
+2        | Switch0    | ARP  | Switch receives ARP broadcast on Fa0/1.
+           Switch LEARNS: PC0_MAC <--> Fa0/1
+           Floods ARP out all ports: Fa0/2, Fa0/3
+
+3        | PC1        | ARP  | PC1 receives ARP request. Matches its IP.
+           PC1 sends ARP Reply (UNICAST) back to PC0.
+           "192.168.20.2 is at PC1_MAC"
+
+4        | PC2        | ARP  | PC2 also receives broadcast but ignores it
+           (IP does not match 192.168.20.2)
+
+5        | Switch0    | ARP  | Switch receives ARP Reply from PC1 on Fa0/2.
+           Switch LEARNS: PC1_MAC <--> Fa0/2
+           Forwards frame only to PC0 (Fa0/1) -- MAC known.
+
+6        | PC0        | ARP  | PC0 receives ARP Reply. ARP Cache updated:
+           192.168.20.2  -->  PC1_MAC
+
+7        | PC0        | ICMP | PC0 sends ICMP Echo Request to PC1
+           (No broadcast needed -- MAC is now known)
+
+8        | Switch0    | ICMP | Switch forwards ICMP frame to Fa0/2 (PC1)
+           using its MAC table.
+
+9        | PC1        | ICMP | PC1 receives ICMP Echo Request.
+           Sends ICMP Echo Reply back to PC0.
+
+10       | Switch0    | ICMP | Switch forwards ICMP Reply to Fa0/1 (PC0).
+
+11       | PC0        | ICMP | PC0 receives ICMP Echo Reply.
+           Ping SUCCESS: Reply from 192.168.20.2
+
+Total Events (First Ping): ~11 events (4 ARP + 4 ICMP + 3 switch forwards)
+
+NOTE: The first ping may show "Request timeout" for the very first packet
+because the ARP resolution takes one round-trip before ICMP can be sent.
+
+========================================================
+TASK 3: SECOND PING (PC0 --> PC1 | SAME IPs)
+========================================================
+
+Observation: ARP cache already has the MAC. No ARP events observed.
+
+EVENT LIST (Second Ping):
+---------------------------------------------------------------------------
+Event #  | At Device  | Type | Description
+---------------------------------------------------------------------------
+1        | PC0        | ICMP | PC0 sends ICMP Echo Request directly.
+           ARP cache hit: 192.168.20.2 = PC1_MAC (cached)
+
+2        | Switch0    | ICMP | Switch forwards ICMP to Fa0/2 (PC1).
+           MAC table already populated -- no flooding.
+
+3        | PC1        | ICMP | PC1 receives Echo Request. Sends Echo Reply.
+
+4        | Switch0    | ICMP | Switch forwards ICMP Reply to Fa0/1 (PC0).
+
+5        | PC0        | ICMP | PC0 receives Echo Reply.
+           Ping SUCCESS: Reply from 192.168.20.2
+
+Total Events (Second Ping): ~5 events (all ICMP, no ARP)
+
+========================================================
+COMPARISON: FIRST PING vs SECOND PING
+========================================================
+
+Aspect                    | First Ping          | Second Ping
+--------------------------|---------------------|------------------
+ARP present?              | YES (broadcast)     | NO (cached)
+Number of events          | ~11                 | ~5
+First reply time          | Slower (ARP delay)  | Faster (direct)
+Switch flooding?          | YES (ARP broadcast) | NO (unicast)
+Packets to PC2 (PC3)?     | YES (ARP broadcast) | NO
+
+KEY INSIGHT:
+The first ping is "slow" because:
+  1. PC0 does not know the MAC address of PC1.
+  2. An ARP Request (broadcast) must be sent and replied to.
+  3. Only AFTER ARP resolves can the ICMP Echo Request be sent.
+
+The second ping is fast because:
+  - ARP cache already has the mapping.
+  - ICMP goes directly without any broadcast overhead.
+
+========================================================
+TASK 4: SWITCH MAC ADDRESS TABLE
+========================================================
+
+After First Ping, the switch MAC table contains:
+
+  VLAN  | MAC Address     | Type     | Port
+  ------|-----------------|----------|----------
+  1     | PC0_MAC         | DYNAMIC  | Fa0/1
+  1     | PC1_MAC         | DYNAMIC  | Fa0/2
+
+Note: PC2 (PC3) MAC address will NOT appear in the table unless
+it sends or receives traffic. Switches learn MACs only from SOURCE
+addresses in frames.
+
+To view MAC table in Packet Tracer:
+  - Click on Switch0
+  - Go to CLI tab
+  - Type: show mac address-table
+
+Expected output:
+  Mac Address Table
+  -------------------------------------------
+  Vlan    Mac Address       Type        Ports
+  ----    -----------       --------    -----
+     1    xxxx.xxxx.xxxx    DYNAMIC     Fa0/1
+     1    yyyy.yyyy.yyyy    DYNAMIC     Fa0/2
+
+========================================================
+END OF EVENT LOG
+========================================================
