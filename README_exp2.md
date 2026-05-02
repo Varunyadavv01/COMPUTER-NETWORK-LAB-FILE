@@ -1,8 +1,8 @@
 # ENCS304 – Computer Networks
 # Experiment 2: Packet Flow Visualization Using Simulation Mode
 
-**Name:** Puneet Kumar Gupta
-**Roll No.:** 2301010171
+**Name:** VARUN YADAV
+**Roll No.:** 2301010173
 **Programme:** B.Tech Computer Science & Engineering
 **Section:** C
 
