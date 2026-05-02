@@ -1,8 +1,8 @@
 # ENCS304 – Computer Networks
 ## Assignment 1: Basic Network Topologies Using Switches and Hubs
 
-**Name:** Puneet Kumar Gupta
-**Roll No.:** 2301010171
+**Name:** VARUN YADAV
+**Roll No.:** 2301010173
 **Programme:** B.Tech Computer Science & Engineering
 **Section:** C
 **Date:** 27 February 2026
